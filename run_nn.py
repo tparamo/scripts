@@ -1,6 +1,7 @@
 from keras.models import model_from_yaml
 import LSTM
-from ml
+import r64_utils as r64
+import pandas as pd
 
 
 def saveModel(nn, filename):
@@ -20,15 +21,29 @@ def loadModel(filename):
     loaded_model.load_weights(filename.h5 + '_weights.h5')
     return loaded_model
 
+
 def trainModel(df):
-    XPCA.shape = (int(22500 / 10), 10, 2)
+    df.shape = (int(22500 / 10), 10, 2)
     nn = LSTM(10, 2, 22500)
     for i in range(20):
         out = "Iteration " + str(i)
         print(out)
-        nn.train(XPCA)
-        yhat = nn.score(XPCA)
-        XPCA.shape = (22500, 2)
+        nn.train(df)
+        yhat = nn.score(df)
+        df.shape = (22500, 2)
+
+def runDataSets():
+    base_dir = "/home/tere/Data/Edincubator/datos/dataset_1/"
+    suffix = "_NextGenDrive"
+    robots = ["KBU1A1121650R02", "KABHVS111110R01", "KASTAL123860R01"]
+    for robot in robots:
+        df = r64.prepareSequencialData(base_dir+robot+suffix)
+        for column in df.columns[::-1]:
+            if column != "time":
+                invidual_df = pd.concat([df['time'], df[column]], axis=1)
+                invidual_df.columns = ['time', 'VAR']
+                run(invidual_df, base_dir+robot, column)
+
 
 if __name__=='__main__':
     trainModel(df)
